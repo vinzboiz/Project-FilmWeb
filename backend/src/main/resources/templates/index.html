@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ThungPhim | Sign in</title>
+    <link rel="stylesheet" th:href="@{/css/github-inspired.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ThungPhim</div>
+      <div class="search-box">Type / to search</div>
+      <div class="menu">
+        <a
+          th:if="${!authenticated and oauthConfigured}"
+          class="auth-btn auth-btn-secondary"
+          th:href="@{/oauth2/authorization/google}"
+          >Đăng nhập</a
+        >
+        <a
+          th:if="${!authenticated and oauthConfigured}"
+          class="auth-btn auth-btn-primary"
+          th:href="@{/oauth2/authorization/google}"
+          >Đăng ký</a
+        >
+        <span
+          th:if="${!authenticated and !oauthConfigured}"
+          class="auth-btn auth-btn-disabled"
+          >Google Login chưa cấu hình</span
+        >
+        <a
+          th:if="${authenticated}"
+          class="user-chip"
+          th:href="@{/profile}"
+          th:text="${displayName}"
+          >email</a
+        >
+        <a
+          th:if="${authenticated}"
+          th:href="${admin} ? @{/admin/dashboard} : @{/user/dashboard}"
+          >Dashboard</a
+        >
+        <form th:if="${authenticated}" th:action="@{/logout}" method="post">
+          <button type="submit" class="link-btn">Logout</button>
+        </form>
+      </div>
+    </header>
+
+    <main
+      class="page-grid single"
+      th:if="${!authenticated and !oauthConfigured}"
+    >
+      <section class="card">
+        <p class="muted">OAuth2 Status</p>
+        <h2>Google OAuth chưa sẵn sàng</h2>
+        <p>
+          Cần cấu hình GOOGLE_CLIENT_ID và GOOGLE_CLIENT_SECRET hợp lệ để dùng
+          đăng nhập Google.
+        </p>
+      </section>
+    </main>
+
+    <main class="page-grid single" th:if="${!authenticated and oauthError}">
+      <section class="card error-box">
+        <p class="muted">OAuth2 Error</p>
+        <h2>Đăng nhập Google thất bại</h2>
+        <p>
+          Thường do Client ID/Secret sai hoặc chưa thêm Redirect URI trong
+          Google Cloud Console.
+        </p>
+      </section>
+    </main>
+
+    <p>Home</p>
+  </body>
+</html>

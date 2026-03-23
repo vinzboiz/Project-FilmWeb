@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lỗi hệ thống</title>
+    <link rel="stylesheet" th:href="@{/css/github-inspired.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ThungPhim</div>
+      <div class="search-box">System Error</div>
+      <div class="menu">
+        <a th:href="@{/}">Home</a>
+      </div>
+    </header>
+
+    <main class="page-grid single">
+      <section class="card">
+        <p class="muted">Đã có lỗi xảy ra</p>
+        <h1>Ứng dụng gặp sự cố</h1>
+        <p>Vui lòng thử lại hoặc kiểm tra log backend để biết chi tiết.</p>
+        <a class="btn primary" th:href="@{/}">Về trang chủ</a>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profile | ThungPhim</title>
+    <link rel="stylesheet" th:href="@{/css/github-inspired.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ThungPhim</div>
+      <div class="search-box">User Profile</div>
+      <div class="menu">
+        <a th:href="@{/}">Home</a>
+        <a th:href="${admin} ? @{/admin/dashboard} : @{/user/dashboard}"
+          >Dashboard</a
+        >
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="link-btn">Logout</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="page-grid single">
+      <section class="card profile-card">
+        <p class="muted">Tài khoản của bạn</p>
+        <h1 th:text="${displayName}">User Name</h1>
+
+        <div th:if="${user != null}" class="profile-grid">
+          <div class="profile-row">
+            <span>Email</span>
+            <strong th:text="${user.email}">email@example.com</strong>
+          </div>
+          <div class="profile-row">
+            <span>Vai trò</span>
+            <strong th:text="${user.admin} ? 'ADMIN' : 'USER'">USER</strong>
+          </div>
+          <div class="profile-row">
+            <span>Ngôn ngữ ưu tiên</span>
+            <strong th:text="${user.preferredLang}">vi</strong>
+          </div>
+          <div class="profile-row">
+            <span>Giao diện ưu tiên</span>
+            <strong th:text="${user.preferredTheme}">light</strong>
+          </div>
+          <div class="profile-row">
+            <span>Trạng thái</span>
+            <strong th:text="${user.locked} ? 'Đã khóa' : 'Hoạt động'"
+              >Hoạt động</strong
+            >
+          </div>
+          <div class="profile-row">
+            <span>Lần đăng nhập gần nhất</span>
+            <strong th:text="${user.lastLoginAt} ?: 'N/A'">N/A</strong>
+          </div>
+          <div class="profile-row">
+            <span>Ngày tạo</span>
+            <strong th:text="${user.createdAt} ?: 'N/A'">N/A</strong>
+          </div>
+          <div class="profile-row">
+            <span>Database</span>
+            <strong th:text="${connectedDb}">thungphim</strong>
+          </div>
+        </div>
+
+        <div th:if="${user == null}" class="signed-in-box">
+          Không tìm thấy bản ghi user trong database hiện tại.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

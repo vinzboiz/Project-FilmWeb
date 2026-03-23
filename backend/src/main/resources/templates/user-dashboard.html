@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/github-inspired.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ThungPhim</div>
+      <div class="search-box">USER AREA</div>
+      <div class="menu">
+        <a th:href="@{/profile}">Profile</a>
+        <a th:if="${admin}" th:href="@{/admin/dashboard}">Admin</a>
+        <a th:href="@{/}">Home</a>
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="link-btn">Logout</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="page-grid single">
+      <section class="card">
+        <p class="muted">Role</p>
+        <h1>USER Dashboard</h1>
+        <p>Xin chào, <strong th:text="${displayName}">email</strong>.</p>
+        <p>
+          Database đang kết nối: <code th:text="${connectedDb}">thungphim</code>
+        </p>
+        <p>Bạn có thể gọi API: <code>/api/user/me</code>.</p>
+      </section>
+    </main>
+  </body>
+</html>

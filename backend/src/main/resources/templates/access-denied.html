@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>403 - Không có quyền</title>
+    <link rel="stylesheet" th:href="@{/css/github-inspired.css}" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ThungPhim</div>
+      <div class="search-box">Access Control</div>
+      <div class="menu">
+        <a th:href="@{/}">Home</a>
+      </div>
+    </header>
+
+    <main class="page-grid single">
+      <section class="card">
+        <p class="muted">HTTP 403</p>
+        <h1>Bạn không có quyền truy cập trang này</h1>
+        <p>
+          Hệ thống đã xác thực tài khoản nhưng role hiện tại không phù hợp với
+          route bạn mở.
+        </p>
+        <a class="btn primary" th:href="@{/}">Quay lại trang chủ</a>
+      </section>
+    </main>
+  </body>
+</html>
