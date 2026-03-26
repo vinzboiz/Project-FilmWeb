@@ -1,5 +1,6 @@
 package com.thungphim.security;
 
+import com.thungphim.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,9 +18,16 @@ import java.util.Collections;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public JwtAuthFilter(JwtUtil jwtUtil) {
+    public JwtAuthFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
     @Override
@@ -32,6 +40,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Integer userId = jwtUtil.getUserIdFromToken(token);
                 boolean isAdmin = jwtUtil.isAdminFromToken(token);
+
+                // Kiểm tra tài khoản có bị khóa không - dùng query riêng để luôn lấy dữ liệu mới từ DB
+                boolean locked = userRepository.findLockedById(userId)
+                        .map(Boolean.TRUE::equals).orElse(false);
+                if (locked) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.getWriter().write("{\"message\":\"Tài khoản đã bị khóa. Liên hệ quản trị viên.\"}");
+                    return;
+                }
+
                 JwtUser jwtUser = new JwtUser(userId, isAdmin);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         jwtUser, null, Collections.emptyList());

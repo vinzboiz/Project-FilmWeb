@@ -31,7 +31,9 @@ public class AdminController {
     public ResponseEntity<List<Map<String, Object>>> listUsers() {
         requireAdmin();
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(
-                "SELECT id, email, full_name, is_admin, created_at FROM users ORDER BY id DESC"
+                "SELECT id, email, full_name, avatar_url, is_admin, locked, last_login_at, created_at, " +
+                "CASE WHEN password_hash = 'OAUTH_GOOGLE' THEN 'google' ELSE 'email' END AS auth_source " +
+                "FROM users ORDER BY id DESC"
         );
         return ResponseEntity.ok(rows);
     }
@@ -50,7 +52,7 @@ public class AdminController {
                 isAdmin, locked, id
         );
         List<Map<String, Object>> updated = jdbcTemplate.queryForList(
-                "SELECT id, email, full_name, is_admin, locked, created_at FROM users WHERE id = ?",
+                "SELECT id, email, full_name, avatar_url, is_admin, locked, last_login_at, created_at FROM users WHERE id = ?",
                 id
         );
         return ResponseEntity.ok(updated.isEmpty() ? Map.of() : updated.get(0));

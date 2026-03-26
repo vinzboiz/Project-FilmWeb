@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.Map;
 
@@ -38,6 +40,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("message", "Method Not Allowed"));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleMaxUpload(MaxUploadSizeExceededException ex) {
+        log.warn("Upload file vượt quá giới hạn", ex);
+        long maxMB = ex.getMaxUploadSize() > 0 ? ex.getMaxUploadSize() / (1024 * 1024) : 102400;
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("message", "File quá lớn. Giới hạn tối đa: " + maxMB + " MB. Hãy nén video hoặc dùng file nhỏ hơn."));
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<Map<String, String>> handleDataAccess(DataAccessException ex) {
+        log.error("Database error", ex);
+        String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+        if (msg != null && msg.length() > 200) msg = msg.substring(0, 200) + "...";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("message", "Lỗi database: " + (msg != null ? msg : "Unknown")));
     }
 
     @ExceptionHandler(Exception.class)

@@ -39,6 +39,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(email, password));
     }
 
+    @PostMapping("/google")
+    public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody Map<String, String> body) {
+        String idToken = body.get("id_token");
+        return ResponseEntity.ok(authService.loginWithGoogle(idToken));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout() {
         return ResponseEntity.ok(Map.of("message", "Logged out"));
@@ -52,6 +58,9 @@ public class AuthController {
         }
         User user = userRepository.findById(jwtUser.userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User không tồn tại"));
+        if (Boolean.TRUE.equals(user.getLocked())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Tài khoản đã bị khóa. Liên hệ quản trị viên.");
+        }
         return ResponseEntity.ok(authService.getMe(user));
     }
 
