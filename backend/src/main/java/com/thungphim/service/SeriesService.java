@@ -133,7 +133,7 @@ public class SeriesService {
     public Map<String, Object> getEpisodeById(int episodeId) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM episodes WHERE id = ?", episodeId);
         if (rows.isEmpty()) return null;
-        Map<String, Object> episode = rows.get(0);
+        Map<String, Object> episode = new LinkedHashMap<>(rows.get(0));
 
         try {
             jdbcTemplate.update("UPDATE episodes SET view_count = COALESCE(view_count, 0) + 1 WHERE id = ?", episodeId);
@@ -142,6 +142,20 @@ public class SeriesService {
                 jdbcTemplate.update("UPDATE series SET view_count = COALESCE(view_count, 0) + 1 WHERE id = ?", asInt(seriesId));
             }
         } catch (Exception ignored) {}
+
+        // Kèm intro mặc định của series để frontend tính "effective intro"
+        Object seriesId = episode.get("series_id");
+        if (seriesId != null) {
+            List<Map<String, Object>> s = jdbcTemplate.queryForList(
+                    "SELECT intro_source_episode_id, intro_start_seconds, intro_end_seconds FROM series WHERE id = ?",
+                    asInt(seriesId)
+            );
+            if (!s.isEmpty()) {
+                episode.put("series_intro_source_episode_id", s.get(0).get("intro_source_episode_id"));
+                episode.put("series_intro_start_seconds", s.get(0).get("intro_start_seconds"));
+                episode.put("series_intro_end_seconds", s.get(0).get("intro_end_seconds"));
+            }
+        }
 
         return episode;
     }
@@ -355,6 +369,9 @@ public class SeriesService {
                         "release_year = COALESCE(?, release_year), " +
                         "country_code = COALESCE(?, country_code), " +
                         "duration_minutes = COALESCE(?, duration_minutes), " +
+                        "intro_source_episode_id = COALESCE(?, intro_source_episode_id), " +
+                        "intro_start_seconds = COALESCE(?, intro_start_seconds), " +
+                        "intro_end_seconds = COALESCE(?, intro_end_seconds), " +
                         "updated_at = NOW(3) " +
                         "WHERE id = ?",
                 body.get("title"),
@@ -368,6 +385,9 @@ public class SeriesService {
                 toIntOrNull(body, "release_year"),
                 body.get("country_code"),
                 toIntOrNull(body, "duration_minutes"),
+                toIntOrNull(body, "intro_source_episode_id"),
+                toDoubleOrNull(body, "intro_start_seconds"),
+                toDoubleOrNull(body, "intro_end_seconds"),
                 id
         );
 
@@ -408,8 +428,8 @@ public class SeriesService {
         String t = String.valueOf(title).trim();
 
         jdbcTemplate.update(
-                "INSERT INTO episodes (series_id, season_id, episode_number, title, description, duration_minutes, thumbnail_url, video_url, release_date, created_at, updated_at) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(3), NOW(3))",
+                "INSERT INTO episodes (series_id, season_id, episode_number, title, description, duration_minutes, thumbnail_url, video_url, release_date, intro_mode, intro_start_seconds, intro_end_seconds, created_at, updated_at) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, 'series'), ?, ?, NOW(3), NOW(3))",
                 sId,
                 seasonId,
                 episodeNumber,
@@ -418,7 +438,10 @@ public class SeriesService {
                 toInt(body.get("duration_minutes")),
                 body.get("thumbnail_url"),
                 body.get("video_url"),
-                body.get("release_date")
+                body.get("release_date"),
+                body.get("intro_mode"),
+                toDouble(body.get("intro_start_seconds")),
+                toDouble(body.get("intro_end_seconds"))
         );
         Integer episodeId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
 
@@ -471,6 +494,9 @@ public class SeriesService {
                         "thumbnail_url = COALESCE(?, thumbnail_url), " +
                         "video_url = COALESCE(?, video_url), " +
                         "release_date = COALESCE(?, release_date), " +
+                        "intro_mode = COALESCE(?, intro_mode), " +
+                        "intro_start_seconds = COALESCE(?, intro_start_seconds), " +
+                        "intro_end_seconds = COALESCE(?, intro_end_seconds), " +
                         "updated_at = NOW(3) " +
                         "WHERE id = ?",
                 toIntOrNull(body, "season_id"),
@@ -481,10 +507,32 @@ public class SeriesService {
                 body.get("thumbnail_url"),
                 body.get("video_url"),
                 body.get("release_date"),
+                asIntroModeOrNull(body.get("intro_mode")),
+                toDoubleOrNull(body, "intro_start_seconds"),
+                toDoubleOrNull(body, "intro_end_seconds"),
                 episodeId
         );
         List<Map<String, Object>> out = jdbcTemplate.queryForList("SELECT * FROM episodes WHERE id = ?", episodeId);
         return out.isEmpty() ? Map.of("id", episodeId) : out.get(0);
+    }
+
+    private static String asIntroModeOrNull(Object o) {
+        if (o == null) return null;
+        String s = String.valueOf(o).trim().toLowerCase(Locale.ROOT);
+        if (s.isEmpty()) return null;
+        if (!s.equals("series") && !s.equals("custom") && !s.equals("none")) return null;
+        return s;
+    }
+
+    private static Double toDouble(Object o) {
+        if (o == null) return null;
+        if (o instanceof Number n) return n.doubleValue();
+        try { return Double.parseDouble(String.valueOf(o)); } catch (Exception ignored) { return null; }
+    }
+
+    private static Double toDoubleOrNull(Map<String, Object> body, String key) {
+        if (body == null || !body.containsKey(key)) return null;
+        return toDouble(body.get(key));
     }
 
     public boolean deleteEpisode(int episodeId) {

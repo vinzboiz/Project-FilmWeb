@@ -397,6 +397,8 @@ public class MoviesService {
                         "age_rating = COALESCE(?, age_rating), " +
                         "country_code = COALESCE(?, country_code), " +
                         "is_featured = COALESCE(?, is_featured), " +
+                        "intro_start_seconds = COALESCE(?, intro_start_seconds), " +
+                        "intro_end_seconds = COALESCE(?, intro_end_seconds), " +
                         "updated_at = ? " +
                         "WHERE id = ?",
                 body.get("title"),
@@ -413,6 +415,8 @@ public class MoviesService {
                 body.get("age_rating"),
                 body.get("country_code"),
                 toBoolOrNull(body, "is_featured"),
+                toDoubleOrNull(body, "intro_start_seconds"),
+                toDoubleOrNull(body, "intro_end_seconds"),
                 Timestamp.from(Instant.now()),
                 movieId
         );
