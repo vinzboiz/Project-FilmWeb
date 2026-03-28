@@ -1,0 +1,143 @@
+@import '../components/card.css';
+
+/* Vùng nội dung dưới hero: luôn nổi trên hero, tránh bị ảnh banner che */
+.home-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 0;
+  background-color: var(--color-bg-main, #000);
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.section h3 {
+  font-size: 1.125rem;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.section-grid-small {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.home-movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.alert-warning {
+  background: rgba(230, 180, 0, 0.15);
+  border: 1px solid rgba(230, 180, 0, 0.4);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.alert-warning a {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: bold;
+  color: #ffc107;
+}
+
+.home-error {
+  color: #e53935;
+}
+
+.home-featured-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.home-featured-item {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.home-continue-item {
+  min-width: 160px;
+}
+
+.home-section-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.home-section-desc a {
+  color: #64b5f6;
+}
+
+.home-history-item-title {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.home-progress-text {
+  font-size: 12px;
+  color: #888;
+}
+
+.home-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-row-track {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+  padding: 8px 0 16px;
+  scroll-behavior: smooth;
+  flex: 1;
+}
+
+.home-row-item {
+  min-width: 200px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-row-item:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.home-row-arrow {
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-row-arrow-right {
+  margin-left: 4px;
+}
+

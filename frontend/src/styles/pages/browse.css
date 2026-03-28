@@ -1,0 +1,39 @@
+@import '../components/card.css';
+
+.browse-page {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.browse-page-title {
+  font-size: 1.75rem;
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.browse-page-loading,
+.browse-page-empty {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.browse-page-error {
+  color: #e53935;
+  margin-bottom: 16px;
+}
+
+.browse-page .section {
+  margin-bottom: 32px;
+}
+
+.browse-page .section-title {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.browse-page .section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}

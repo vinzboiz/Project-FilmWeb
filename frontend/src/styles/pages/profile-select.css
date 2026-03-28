@@ -1,0 +1,228 @@
+.profile-select-page {
+  padding: 48px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-select-page h1 {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.profile-select-error {
+  color: #e53935;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.profile-select-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.profile-card {
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 30, 30, 0.8);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-card:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-card-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: visible;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.profile-card-avatar-clickable {
+  cursor: pointer;
+}
+
+.profile-card-avatar-wrap > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Popover chọn 1 trong 4 avatar */
+.profile-avatar-picker {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(20, 20, 20, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.profile-avatar-picker-item {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  transition: border-color 0.2s ease;
+}
+
+.profile-avatar-picker-item:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-avatar-picker-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 4px;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.profile-card-name-input {
+  width: 100%;
+  max-width: 136px;
+  font-size: 14px;
+  padding: 4px 6px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.profile-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.profile-card-actions button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.profile-card-actions button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.profile-card-actions .profile-card-delete {
+  background: rgba(229, 57, 53, 0.6);
+  color: #fff;
+}
+
+.profile-card-actions .profile-card-delete:hover {
+  background: rgba(229, 57, 53, 0.9);
+}
+
+/* Nút thêm hồ sơ: cùng kích thước, có viền */
+.profile-card-add {
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.profile-card-add:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.profile-card-add-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.profile-select-loading {
+  text-align: center;
+  padding: 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.profile-select-form {
+  max-width: 400px;
+  margin: 24px auto 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.profile-select-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+}
+
+.profile-select-form button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #e50914;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-select-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
