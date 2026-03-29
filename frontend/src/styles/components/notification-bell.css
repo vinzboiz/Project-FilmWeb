@@ -1,0 +1,75 @@
+.notif-wrap {
+  position: relative;
+}
+
+.notif-btn {
+  position: relative;
+  border: none;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e50914;
+}
+
+.notif-dropdown {
+  position: absolute;
+  right: 0;
+  top: 130%;
+  width: 260px;
+  max-height: 80vh;
+  background: #111;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 8px;
+
+  /* Ẩn scrollbar nhưng vẫn cuộn được */
+  scrollbar-width: none; /* Firefox */
+}
+
+.notif-dropdown::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.notif-item {
+  padding: 6px 4px;
+  border-bottom: 1px solid #222;
+  font-size: 13px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-message {
+  margin-bottom: 2px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.notif-empty {
+  padding: 8px 4px;
+  font-size: 13px;
+  color: #aaa;
+}
+

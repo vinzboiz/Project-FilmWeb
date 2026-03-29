@@ -1,0 +1,618 @@
+.hero-banner {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 90vh;
+  min-height: 320px;
+  max-height: 90vh;
+  margin: -68px 0 0; /* kéo banner lên dưới header cao 68px */
+  overflow: hidden;
+  background-color: #000000;
+}
+
+/* Banner image (poster) */
+.hero-banner-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;         /* phóng to ngang */
+  height: 100%;        /* phóng to dọc */
+  object-fit: cover;
+  object-position: top;
+  transform: translate(0%, 0%); /* canh giữa sau khi phóng to */
+  display: block;
+}
+
+/* Banner video (trailer) */
+.hero-banner-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;         /* phóng to ngang */
+  height: 100%;        /* phóng to dọc */
+  object-fit: cover;
+  object-position:center;
+  transform: translate(0%, 0%); /* canh giữa sau khi phóng to */
+  display: block;
+}
+
+/* Ảnh bìa fade-out trong 2s trước khi trailer xuất hiện */
+.hero-banner-poster-fade {
+  animation: hero-banner-poster-fade 2s ease-out forwards;
+}
+
+@keyframes hero-banner-poster-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* YouTube: wrapper chứa iframe + lớp chặn tương tác */
+.hero-banner-yt-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Iframe không nhận pointer — click rơi xuống overlay hoặc không tới YT */
+.hero-banner-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: unset;
+  pointer-events: none;
+}
+
+/* Overlay trong suốt, bắt toàn bộ thao tác chuột — giảm tua/tạm dừng trên player */
+.hero-banner-yt-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: default;
+  background: transparent;
+}
+
+.hero-banner-content {
+  position: absolute;
+  left: 4%;
+  bottom: 18%;
+  max-width: 36%;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.hero-banner-content--shrink {
+  bottom: 12%;
+}
+
+.hero-banner-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.hero-banner-title--shrink {
+  font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+  transform: translateY(24px);
+  transition: all 0.6s ease;
+}
+
+.hero-banner-intro {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 26rem;
+  opacity: 0.95;
+}
+
+.hero-banner-intro--hidden {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.4s ease, max-height 0.4s ease;
+}
+
+.hero-banner-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: 0.95;
+}
+
+.hero-banner-cta {
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(229, 9, 20, 0.95);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.hero-banner-cta:hover {
+  background: #f40612;
+}
+
+.hero-banner-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 0, 0, 0.6) 40%,
+    rgba(0, 0, 0, 0.2) 75%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Góc phải trên: nhãn tuổi */
+.hero-banner-top-right {
+  position: absolute;
+  top: 20px;
+  right: 4%;
+  z-index: 3;
+}
+
+.hero-banner-age {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+}
+
+/* Góc phải dưới: nhãn tuổi + nút mute + nút xem lại */
+.hero-banner-bottom-right {
+  position: absolute;
+  right: 4%;
+  bottom: 20px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-banner-mute-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-banner-mute-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hero-banner-replay-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-banner-replay-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Overlay popup thông tin phim - transition 1.5s khi hiện, z-index cao để luôn nổi trên mọi nội dung */
+.hero-banner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hero-banner-overlay-in 0.5s ease-out forwards;
+}
+
+@keyframes hero-banner-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-banner-modal {
+  position: relative;
+  z-index: 1;
+  width: min(960px, 92vw);
+  max-height: 90vh;
+  background: #141414;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: hero-banner-modal-in 1.5s ease-out forwards;
+}
+
+@keyframes hero-banner-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hero-banner-modal-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  padding: 12px;
+}
+
+.hero-banner-close-btn {
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Wrapper cuộn chung: trailer + body cuộn đồng bộ */
+.hero-banner-modal-scroll {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hero-banner-modal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Top: video/poster + gradient + overlay nút */
+.hero-banner-modal-top {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  flex-shrink: 0;
+  background: #000;
+}
+
+.hero-banner-modal-video,
+.hero-banner-modal-video-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-banner-modal-top-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, #141414 0%, transparent 40%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-banner-modal-top-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 24px 20px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.hero-banner-modal-title {
+  width: 100%;
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.hero-banner-modal-actions--top {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-banner-btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 18px;
+}
+
+.hero-banner-btn-icon:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Nút + (watchlist) và Like đổi màu đỏ khi active */
+.hero-banner-btn-watchlist.hero-banner-btn-watchlist--active,
+.hero-banner-btn-like.hero-banner-btn-like--active {
+  background: #e50914 !important;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.hero-banner-btn-watchlist.hero-banner-btn-watchlist--active:hover:not(:disabled),
+.hero-banner-btn-like.hero-banner-btn-like--active:hover:not(:disabled) {
+  background: #f40612 !important;
+}
+
+.hero-banner-modal-like-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-banner-modal-body {
+  padding: 20px 24px 24px;
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-banner-modal-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hai cột thông tin */
+.hero-banner-modal-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
+  margin-bottom: 24px;
+}
+
+.hero-banner-modal-info-left {
+  min-width: 0;
+}
+
+.hero-banner-modal-meta-row {
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.hero-banner-modal-meta-row span + span::before {
+  content: ' • ';
+}
+
+.hero-banner-modal-age {
+  display: inline-block;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+.hero-banner-modal-desc {
+  font-size: 14px;
+  color: #ddd;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hero-banner-modal-info-right {
+  min-width: 0;
+}
+
+/* Phần tập (series) */
+.hero-banner-modal-episodes {
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+.hero-banner-modal-episodes-title {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.hero-banner-modal-season-wrap {
+  margin-bottom: 8px;
+}
+
+.hero-banner-modal-season-select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.hero-banner-modal-season-meta {
+  font-size: 13px;
+  color: #999;
+  margin: 0 0 12px;
+}
+
+.hero-banner-modal-episode-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-banner-modal-episode-item {
+  display: grid;
+  grid-template-columns: 40px 160px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.hero-banner-modal-episode-item:last-child {
+  border-bottom: none;
+}
+
+.hero-banner-modal-episode-num {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #888;
+}
+
+.hero-banner-modal-episode-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #222;
+}
+
+.hero-banner-modal-episode-info {
+  min-width: 0;
+}
+
+.hero-banner-modal-episode-title {
+  display: block;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.hero-banner-modal-episode-title:hover {
+  color: #e50914;
+}
+
+.hero-banner-modal-episode-desc {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero-banner-modal-episode-duration {
+  font-size: 13px;
+  color: #888;
+}
+
+.hero-banner-modal-episode-empty {
+  padding: 20px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.hero-banner-btn {
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.hero-banner-btn-primary {
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+}
+
+.hero-banner-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.hero-banner-like-count {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.hero-banner-modal-meta {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.hero-banner-modal-meta span + span::before {
+  content: ' • ';
+}
+
+.hero-banner-modal-right {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-banner-modal-loading {
+  color: #999;
+  font-size: 14px;
+}
+
+.hero-banner-modal-error {
+  color: #e53935;
+  font-size: 14px;
+}
+
+.hero-banner-desc-long {
+  font-size: 14px;
+  color: #ddd;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero-banner-meta-section {
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.hero-banner-meta-section strong {
+  color: #fff;
+}
+
+.hero-banner-meta-more {
+  color: #46d369;
+  cursor: pointer;
+  margin-left: 4px;
+}
+

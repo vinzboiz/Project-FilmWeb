@@ -1,0 +1,13 @@
+.home-search-block {
+  margin-bottom: 24px;
+}
+
+.home-search-block:last-child {
+  margin-bottom: 0;
+}
+
+.home-search-heading {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}

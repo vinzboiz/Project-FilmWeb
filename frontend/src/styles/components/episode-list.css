@@ -1,0 +1,96 @@
+.episode-list {
+  margin-bottom: 32px;
+}
+
+.episode-list-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.episode-list-season-wrap {
+  margin-bottom: 16px;
+}
+
+.episode-list-season-label {
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.episode-list-season-select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.episode-list-empty {
+  color: #888;
+}
+
+.episode-list-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.episode-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.episode-list-thumb {
+  width: 120px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.episode-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.episode-list-link {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.episode-list-link:hover {
+  text-decoration: underline;
+}
+
+.episode-list-meta {
+  margin-left: 8px;
+  color: #888;
+  font-size: 14px;
+}
+
+.episode-list-desc {
+  margin: 4px 0 0;
+  color: #aaa;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.episode-list-watch {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #e50914;
+  color: #fff;
+  text-decoration: none;
+}
+
+.episode-list-watch:hover {
+  background: #f40612;
+}
