@@ -6,6 +6,7 @@ import { pushClientNotification } from '../utils/notificationsClient';
 import ReviewSection from '../components/ReviewSection';
 import DetailSuggestions from '../components/detail/DetailSuggestions';
 import HeroBanner from '../components/home/HeroBanner';
+import HlsPlayer from '../components/player/HlsPlayer';
 import '../styles/pages/movie-detail.css';
 import '../styles/pages/watch-movie.css';
 
@@ -14,6 +15,14 @@ function resolveVideoSrc(url) {
   const u = String(url).trim();
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
   return u.startsWith('/') ? `${API_BASE}${u}` : `${API_BASE}/${u.replace(/^\//, '')}`;
+}
+
+function isHlsUrl(url) {
+  return !!url && String(url).trim().toLowerCase().endsWith('.m3u8');
+}
+
+function isMp4Url(url) {
+  return !!url && String(url).trim().toLowerCase().endsWith('.mp4');
 }
 
 function WatchMoviePage() {
@@ -54,6 +63,28 @@ function WatchMoviePage() {
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [id]);
+
+  useEffect(() => {
+    if (!movie || !isMp4Url(movie.video_url)) return undefined;
+    let stopped = false;
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/movies/${id}/stream-status`);
+        if (!res.ok) return;
+        const status = await res.json();
+        if (!stopped && isHlsUrl(status?.video_url)) {
+          setMovie((prev) => ({ ...prev, video_url: status.video_url }));
+          clearInterval(timer);
+        }
+      } catch (_) {
+        // ignore transient polling errors
+      }
+    }, 4000);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
+  }, [movie, id]);
 
   useEffect(() => {
     if (continueSecondsFromState > 0) {
@@ -239,11 +270,15 @@ function WatchMoviePage() {
     );
   }
 
-  const videoSrc = resolveVideoSrc(movie.video_url);
+  const videoSrc = isHlsUrl(movie.video_url) ? resolveVideoSrc(movie.video_url) : null;
   if (!videoSrc) {
     return (
       <div className="watch-movie">
-        <div className="watch-movie-error">Phim chưa có video.</div>
+        <div className="watch-movie-error">
+          {isMp4Url(movie.video_url)
+            ? 'Video đang được băm sang HLS bảo mật, vui lòng chờ vài giây rồi tải lại trang.'
+            : 'Phim chưa có video.'}
+        </div>
         <Link to={`/movies/${id}`}>Quay lại trang chi tiết</Link>
       </div>
     );
@@ -281,8 +316,9 @@ function WatchMoviePage() {
       </nav>
 
       <div className="watch-movie-video-wrap">
-        <video
-          ref={videoRef}
+        <HlsPlayer
+          videoRef={videoRef}
+          token={token}
           controls
           className="watch-movie-video"
           src={videoSrc}

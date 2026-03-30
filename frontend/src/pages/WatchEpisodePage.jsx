@@ -4,6 +4,7 @@ import { API_BASE, getToken, getProfileId } from '../apis/client';
 import ReviewSection from '../components/ReviewSection';
 import DetailSuggestions from '../components/detail/DetailSuggestions';
 import HeroBanner from '../components/home/HeroBanner';
+import HlsPlayer from '../components/player/HlsPlayer';
 import '../styles/pages/watch-movie.css';
 
 function resolveVideoSrc(url) {
@@ -11,6 +12,14 @@ function resolveVideoSrc(url) {
   const u = String(url).trim();
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
   return u.startsWith('/') ? `${API_BASE}${u}` : `${API_BASE}/${u.replace(/^\//, '')}`;
+}
+
+function isHlsUrl(url) {
+  return !!url && String(url).trim().toLowerCase().endsWith('.m3u8');
+}
+
+function isMp4Url(url) {
+  return !!url && String(url).trim().toLowerCase().endsWith('.mp4');
 }
 
 function WatchEpisodePage() {
@@ -52,6 +61,28 @@ function WatchEpisodePage() {
       });
     return () => { cancelled = true; };
   }, [episodeId]);
+
+  useEffect(() => {
+    if (!episode || !isMp4Url(episode.video_url)) return undefined;
+    let stopped = false;
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/series/episode/${episodeId}/stream-status`);
+        if (!res.ok) return;
+        const status = await res.json();
+        if (!stopped && isHlsUrl(status?.video_url)) {
+          setEpisode((prev) => ({ ...prev, video_url: status.video_url }));
+          clearInterval(timer);
+        }
+      } catch (_) {
+        // ignore transient polling errors
+      }
+    }, 4000);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
+  }, [episode, episodeId]);
 
   useEffect(() => {
     if (continueSecondsFromState > 0) {
@@ -193,7 +224,7 @@ function WatchEpisodePage() {
   if (loading) return <div style={{ padding: '24px' }}>Đang tải...</div>;
   if (error || !episode) return <div style={{ padding: '24px', color: 'red' }}>{error || 'Không tìm thấy tập'}</div>;
 
-  const videoSrc = resolveVideoSrc(episode.video_url);
+  const videoSrc = isHlsUrl(episode.video_url) ? resolveVideoSrc(episode.video_url) : null;
 
   return (
     <div style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
@@ -273,8 +304,9 @@ function WatchEpisodePage() {
               onKeyDown={handleVideoKeyDown}
               style={{ outline: 'none', position: 'relative' }}
             >
-              <video
-                ref={videoRef}
+              <HlsPlayer
+                videoRef={videoRef}
+                token={token}
                 controls
                 style={{ width: '100%', maxHeight: '400px', display: 'block' }}
                 src={videoSrc}
@@ -283,9 +315,7 @@ function WatchEpisodePage() {
                 onPlaying={handleTimeUpdate}
                 onPause={handlePause}
                 onSeeked={handleSeeked}
-              >
-                Trình duyệt không hỗ trợ video.
-              </video>
+              />
               {showSkipIntro && (
                 <button
                   type="button"
@@ -317,7 +347,9 @@ function WatchEpisodePage() {
               fontSize: '16px',
             }}
           >
-            Chưa có video cho tập này.
+            {isMp4Url(episode.video_url)
+              ? 'Video tập này đang được băm sang HLS bảo mật, vui lòng chờ vài giây.'
+              : 'Chưa có video cho tập này.'}
           </div>
         )}
       </div>

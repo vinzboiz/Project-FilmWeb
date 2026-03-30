@@ -50,6 +50,13 @@ public class SeriesController {
         return ResponseEntity.ok(ep);
     }
 
+    @GetMapping("/episode/{episodeId}/stream-status")
+    public ResponseEntity<?> episodeStreamStatus(@PathVariable int episodeId) {
+        Map<String, Object> status = seriesService.getEpisodeStreamStatus(episodeId);
+        if (status == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Episode not found");
+        return ResponseEntity.ok(status);
+    }
+
     @GetMapping("/{id}/suggestions")
     public ResponseEntity<List<Map<String, Object>>> suggestions(@PathVariable int id, @RequestParam(required = false) Integer limit) {
         return ResponseEntity.ok(seriesService.getSuggestions(id, limit));

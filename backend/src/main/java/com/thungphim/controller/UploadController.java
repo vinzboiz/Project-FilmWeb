@@ -4,6 +4,7 @@ import com.thungphim.entity.Episode;
 import com.thungphim.repository.EpisodeRepository;
 import com.thungphim.security.JwtAuthFilter;
 import com.thungphim.service.UploadService;
+import com.thungphim.service.VideoProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,11 +29,13 @@ public class UploadController {
     private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
     private final UploadService uploadService;
+    private final VideoProcessService videoProcessService;
     private final EpisodeRepository episodeRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    public UploadController(UploadService uploadService, EpisodeRepository episodeRepository, JdbcTemplate jdbcTemplate) {
+    public UploadController(UploadService uploadService, VideoProcessService videoProcessService, EpisodeRepository episodeRepository, JdbcTemplate jdbcTemplate) {
         this.uploadService = uploadService;
+        this.videoProcessService = videoProcessService;
         this.episodeRepository = episodeRepository;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -179,6 +182,62 @@ public class UploadController {
             }
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, msg);
         }
+    }
+
+    @PostMapping("/reprocess-hls/movie/{movieId}")
+    public ResponseEntity<Map<String, Object>> reprocessMovieHls(@PathVariable Integer movieId) {
+        requireAdmin();
+        String videoUrl = jdbcTemplate.query(
+                "SELECT video_url FROM movies WHERE id = ?",
+                rs -> rs.next() ? rs.getString(1) : null,
+                movieId
+        );
+        if (videoUrl == null || videoUrl.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie không có video_url để băm");
+        }
+        if (videoUrl.toLowerCase().endsWith(".m3u8")) {
+            return ResponseEntity.ok(Map.of("movie_id", movieId, "video_url", videoUrl, "message", "Movie đã ở định dạng HLS"));
+        }
+
+        Path source = uploadService.resolvePathFromUrl(videoUrl);
+        if (source == null || !Files.exists(source)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy file video nguồn: " + videoUrl);
+        }
+
+        videoProcessService.processToHlsAsync(videoUrl, source);
+        return ResponseEntity.ok(Map.of(
+                "movie_id", movieId,
+                "video_url", videoUrl,
+                "message", "Đã kích hoạt băm HLS chạy nền"
+        ));
+    }
+
+    @PostMapping("/reprocess-hls/episode/{episodeId}")
+    public ResponseEntity<Map<String, Object>> reprocessEpisodeHls(@PathVariable Integer episodeId) {
+        requireAdmin();
+        String videoUrl = jdbcTemplate.query(
+                "SELECT video_url FROM episodes WHERE id = ?",
+                rs -> rs.next() ? rs.getString(1) : null,
+                episodeId
+        );
+        if (videoUrl == null || videoUrl.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Episode không có video_url để băm");
+        }
+        if (videoUrl.toLowerCase().endsWith(".m3u8")) {
+            return ResponseEntity.ok(Map.of("episode_id", episodeId, "video_url", videoUrl, "message", "Episode đã ở định dạng HLS"));
+        }
+
+        Path source = uploadService.resolvePathFromUrl(videoUrl);
+        if (source == null || !Files.exists(source)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy file video nguồn: " + videoUrl);
+        }
+
+        videoProcessService.processToHlsAsync(videoUrl, source);
+        return ResponseEntity.ok(Map.of(
+                "episode_id", episodeId,
+                "video_url", videoUrl,
+                "message", "Đã kích hoạt băm HLS chạy nền"
+        ));
     }
 }
 
