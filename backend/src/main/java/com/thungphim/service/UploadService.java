@@ -21,6 +21,9 @@ public class UploadService {
     @Value("${app.upload.videos}")
     private String videosDir;
 
+    @Value("${app.upload.root:../uploads}")
+    private String uploadRoot;
+
     public String saveImage(MultipartFile file) throws IOException {
         return save(file, imagesDir, "/uploads/images/");
     }
@@ -35,7 +38,12 @@ public class UploadService {
         String rel = url.startsWith("/") ? url.substring(1) : url;
         if (rel.startsWith("uploads/videos/")) {
             String filename = rel.substring("uploads/videos/".length());
-            return Paths.get(videosDir, filename).toAbsolutePath().normalize();
+            Path preferred = Paths.get(videosDir, filename).toAbsolutePath().normalize();
+            if (Files.exists(preferred)) return preferred;
+
+            Path legacy = Paths.get(uploadRoot, "videos", filename).toAbsolutePath().normalize();
+            if (Files.exists(legacy)) return legacy;
+            return preferred;
         }
         if (rel.startsWith("uploads/images/")) {
             String filename = rel.substring("uploads/images/".length());

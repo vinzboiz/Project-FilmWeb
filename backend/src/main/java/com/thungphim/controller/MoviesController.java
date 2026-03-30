@@ -52,6 +52,14 @@ public class MoviesController {
         return ResponseEntity.ok(movie);
     }
 
+    @GetMapping("/{id}/stream-status")
+    public ResponseEntity<Map<String, Object>> streamStatus(@PathVariable int id) {
+        if (id <= 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "movie id không hợp lệ");
+        Map<String, Object> status = moviesService.getMovieStreamStatus(id);
+        if (status == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found");
+        return ResponseEntity.ok(status);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<Map<String, Object>>> search(@RequestParam(name = "q", required = false) String q) {
         return ResponseEntity.ok(moviesService.searchMovies(q));

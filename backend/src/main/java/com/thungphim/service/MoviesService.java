@@ -1,8 +1,12 @@
 package com.thungphim.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.Normalizer;
 import java.time.Instant;
@@ -18,9 +22,17 @@ public class MoviesService {
     private static final String TRAILER_WHERE = "trailer_url IS NOT NULL AND trailer_url != '' AND trailer_url LIKE '/uploads/%'";
 
     private final JdbcTemplate jdbcTemplate;
+    private final VideoProcessService videoProcessService;
 
-    public MoviesService(JdbcTemplate jdbcTemplate) {
+    @Value("${app.storage.original:${app.upload.videos}}")
+    private String originalVideoDir;
+
+    @Value("${app.upload.root:../uploads}")
+    private String uploadRoot;
+
+    public MoviesService(JdbcTemplate jdbcTemplate, VideoProcessService videoProcessService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.videoProcessService = videoProcessService;
     }
 
     public List<Map<String, Object>> topRating(Integer limit, String type, boolean featured) {
@@ -127,6 +139,7 @@ public class MoviesService {
         if (rows.isEmpty()) return null;
 
         Map<String, Object> movie = new LinkedHashMap<>(rows.get(0));
+        requestHlsProcessing(asString(movie.get("video_url")));
 
         List<Map<String, Object>> cast = jdbcTemplate.queryForList(
                 "SELECT p.id, p.name, p.avatar_url, c.role " +
@@ -150,6 +163,18 @@ public class MoviesService {
         movie.put("genres", genres);
         movie.put("review_count", reviewCount != null ? reviewCount : 0);
         return movie;
+    }
+
+    public Map<String, Object> getMovieStreamStatus(int movieId) {
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "SELECT id, video_url, status, updated_at FROM movies WHERE id = ?",
+                movieId
+        );
+        if (rows.isEmpty()) return null;
+
+        Map<String, Object> status = new LinkedHashMap<>(rows.get(0));
+        requestHlsProcessing(asString(status.get("video_url")));
+        return status;
     }
 
     public List<Map<String, Object>> searchMovies(String q) {
@@ -347,6 +372,7 @@ public class MoviesService {
 
     public Map<String, Object> createMovie(Map<String, Object> body) {
         String title = body.get("title") == null ? null : String.valueOf(body.get("title")).trim();
+        String videoUrl = asString(body.get("video_url"));
         jdbcTemplate.update(
                 "INSERT INTO movies (title, short_intro, description, release_year, duration_minutes, thumbnail_url, banner_url, trailer_url, trailer_youtube_url, video_url, rating, age_rating, country_code, is_featured, view_count, like_count, created_at, updated_at) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, NOW(3), NOW(3))",
@@ -373,6 +399,7 @@ public class MoviesService {
                 // DB cũ chưa có cột title_normalized — bỏ qua, INSERT phim vẫn thành công
             }
         }
+        requestHlsProcessing(videoUrl);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM movies WHERE id = ?", id);
         return rows.isEmpty() ? Map.of("id", id) : rows.get(0);
     }
@@ -380,6 +407,7 @@ public class MoviesService {
     public Map<String, Object> updateMovie(int movieId, Map<String, Object> body) {
         List<Map<String, Object>> existing = jdbcTemplate.queryForList("SELECT id FROM movies WHERE id = ?", movieId);
         if (existing.isEmpty()) return null;
+        String videoUrl = body.containsKey("video_url") ? asString(body.get("video_url")) : null;
 
         jdbcTemplate.update(
                 "UPDATE movies SET " +
@@ -430,8 +458,38 @@ public class MoviesService {
             }
         }
 
+        requestHlsProcessing(videoUrl);
+
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM movies WHERE id = ?", movieId);
         return rows.isEmpty() ? Map.of("id", movieId) : rows.get(0);
+    }
+
+    private void requestHlsProcessing(String videoUrl) {
+        if (videoUrl == null || videoUrl.isBlank()) return;
+        String lower = videoUrl.toLowerCase(Locale.ROOT);
+        if (!lower.endsWith(".mp4")) return;
+
+        Path source = resolveSourceVideoPath(videoUrl);
+        videoProcessService.processToHlsAsync(videoUrl, source);
+    }
+
+    private Path resolveSourceVideoPath(String videoUrl) {
+        if (videoUrl.startsWith("/uploads/videos/")) {
+            String filename = videoUrl.substring("/uploads/videos/".length());
+            Path preferred = Paths.get(originalVideoDir, filename).toAbsolutePath().normalize();
+            if (Files.exists(preferred)) return preferred;
+
+            Path legacy = Paths.get(uploadRoot, "videos", filename).toAbsolutePath().normalize();
+            if (Files.exists(legacy)) return legacy;
+            return preferred;
+        }
+        return Paths.get(videoUrl.startsWith("/") ? videoUrl.substring(1) : videoUrl).toAbsolutePath().normalize();
+    }
+
+    private static String asString(Object value) {
+        if (value == null) return null;
+        String s = String.valueOf(value).trim();
+        return s.isEmpty() ? null : s;
     }
 
     public boolean deleteMovie(int movieId) {

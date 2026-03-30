@@ -1,8 +1,10 @@
 package com.thungphim.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
@@ -13,9 +15,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SeriesService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final VideoProcessService videoProcessService;
 
-    public SeriesService(JdbcTemplate jdbcTemplate) {
+    @Value("${app.storage.original:${app.upload.videos}}")
+    private String originalVideoDir;
+
+    @Value("${app.upload.root:../uploads}")
+    private String uploadRoot;
+
+    public SeriesService(JdbcTemplate jdbcTemplate, VideoProcessService videoProcessService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.videoProcessService = videoProcessService;
     }
 
     public List<Map<String, Object>> listSeries(Integer profileId, Integer genreId, Integer yearFrom, Integer yearTo, String countryCode, Integer limit) {
@@ -134,6 +144,7 @@ public class SeriesService {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM episodes WHERE id = ?", episodeId);
         if (rows.isEmpty()) return null;
         Map<String, Object> episode = new LinkedHashMap<>(rows.get(0));
+        requestHlsProcessing(asString(episode.get("video_url")));
 
         try {
             jdbcTemplate.update("UPDATE episodes SET view_count = COALESCE(view_count, 0) + 1 WHERE id = ?", episodeId);
@@ -158,6 +169,17 @@ public class SeriesService {
         }
 
         return episode;
+    }
+
+    public Map<String, Object> getEpisodeStreamStatus(int episodeId) {
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "SELECT id, video_url, updated_at FROM episodes WHERE id = ?",
+                episodeId
+        );
+        if (rows.isEmpty()) return null;
+        Map<String, Object> status = new LinkedHashMap<>(rows.get(0));
+        requestHlsProcessing(asString(status.get("video_url")));
+        return status;
     }
 
     public Map<String, Object> likeStatus(int seriesId, Integer profileId) {
@@ -426,6 +448,7 @@ public class SeriesService {
         Integer seasonId = toInt(body.get("season_id"));
         Integer episodeNumber = toInt(body.get("episode_number"));
         String t = String.valueOf(title).trim();
+        String videoUrl = asString(body.get("video_url"));
 
         jdbcTemplate.update(
                 "INSERT INTO episodes (series_id, season_id, episode_number, title, description, duration_minutes, thumbnail_url, video_url, release_date, intro_mode, intro_start_seconds, intro_end_seconds, created_at, updated_at) " +
@@ -477,6 +500,8 @@ public class SeriesService {
             }
         }
 
+        requestHlsProcessing(videoUrl);
+
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM episodes WHERE id = ?", episodeId);
         return rows.isEmpty() ? Map.of("id", episodeId) : rows.get(0);
     }
@@ -484,6 +509,7 @@ public class SeriesService {
     public Map<String, Object> updateEpisode(int episodeId, Map<String, Object> body) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT id FROM episodes WHERE id = ?", episodeId);
         if (rows.isEmpty()) return null;
+        String videoUrl = body.containsKey("video_url") ? asString(body.get("video_url")) : null;
         jdbcTemplate.update(
                 "UPDATE episodes SET " +
                         "season_id = COALESCE(?, season_id), " +
@@ -512,8 +538,39 @@ public class SeriesService {
                 toDoubleOrNull(body, "intro_end_seconds"),
                 episodeId
         );
+
+        requestHlsProcessing(videoUrl);
+
         List<Map<String, Object>> out = jdbcTemplate.queryForList("SELECT * FROM episodes WHERE id = ?", episodeId);
         return out.isEmpty() ? Map.of("id", episodeId) : out.get(0);
+    }
+
+    private void requestHlsProcessing(String videoUrl) {
+        if (videoUrl == null || videoUrl.isBlank()) return;
+        String lower = videoUrl.toLowerCase(Locale.ROOT);
+        if (!lower.endsWith(".mp4")) return;
+
+        Path source = resolveSourceVideoPath(videoUrl);
+        videoProcessService.processToHlsAsync(videoUrl, source);
+    }
+
+    private Path resolveSourceVideoPath(String videoUrl) {
+        if (videoUrl.startsWith("/uploads/videos/")) {
+            String filename = videoUrl.substring("/uploads/videos/".length());
+            Path preferred = Paths.get(originalVideoDir, filename).toAbsolutePath().normalize();
+            if (Files.exists(preferred)) return preferred;
+
+            Path legacy = Paths.get(uploadRoot, "videos", filename).toAbsolutePath().normalize();
+            if (Files.exists(legacy)) return legacy;
+            return preferred;
+        }
+        return Paths.get(videoUrl.startsWith("/") ? videoUrl.substring(1) : videoUrl).toAbsolutePath().normalize();
+    }
+
+    private static String asString(Object value) {
+        if (value == null) return null;
+        String s = String.valueOf(value).trim();
+        return s.isEmpty() ? null : s;
     }
 
     private static String asIntroModeOrNull(Object o) {
