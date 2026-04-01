@@ -1,0 +1,67 @@
+.admin-dashboard {
+  padding: 32px;
+}
+
+.admin-dashboard h1 {
+  margin-bottom: 16px;
+}
+
+.admin-dashboard-intro {
+  margin-bottom: 24px;
+  color: #ccc;
+  max-width: 720px;
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.admin-dashboard-card {
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-dashboard-card h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.admin-dashboard-card p {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 12px;
+}
+
+.admin-dashboard-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-btn {
+  padding: 6px 12px;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.admin-btn--primary {
+  background: #e50914;
+}
+
+.admin-btn--primary:hover {
+  background: #f40612;
+}
+
+.admin-btn--secondary {
+  background: #333;
+}
+
+.admin-btn--secondary:hover {
+  background: #444;
+}

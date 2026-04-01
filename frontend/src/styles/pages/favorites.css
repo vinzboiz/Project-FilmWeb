@@ -1,0 +1,59 @@
+.favorites-page {
+  padding: 24px;
+}
+
+.favorites-page-loading {
+  padding: 24px;
+}
+
+.favorites-page-error {
+  color: #e53935;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.favorites-card {
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: #111;
+}
+
+.favorites-card .card-img {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  display: block;
+  object-fit: cover;
+}
+
+.favorites-card .card-title {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.favorites-card-actions {
+  margin-top: 8px;
+}
+
+.favorites-card-actions .link-accent {
+  font-size: 12px;
+}
+
+.favorites-card-actions button {
+  margin-left: 8px;
+  font-size: 12px;
+  background: none;
+  border: none;
+  color: #e53935;
+  cursor: pointer;
+}
+
+.favorites-card-actions button:hover {
+  text-decoration: underline;
+}

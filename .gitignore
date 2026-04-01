@@ -1,0 +1,25 @@
+# Runtime/generated media artifacts
+uploads/images/*
+uploads/videos/*
+streaming_video/
+private_uploads/
+
+# Keep empty upload folders if needed
+!uploads/images/.gitkeep
+!uploads/videos/.gitkeep
+
+# Build artifacts
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# Local env/config
+frontend/.env.local
+frontend/.env.*.local
+backend/.env
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json

@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS genres (
 CREATE TABLE IF NOT EXISTS movies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(191) NOT NULL,
+    title_normalized VARCHAR(191) NULL,
     short_intro VARCHAR(255) NULL,
     description TEXT NULL,
     release_year INT NULL,
@@ -88,6 +89,7 @@ CREATE TABLE IF NOT EXISTS persons (
 CREATE TABLE IF NOT EXISTS series (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(191) NOT NULL,
+    title_normalized VARCHAR(191) NULL,
     description TEXT NULL,
     thumbnail_url VARCHAR(191) NULL,
     banner_url VARCHAR(191) NULL,
@@ -114,7 +116,17 @@ CREATE TABLE IF NOT EXISTS series_genres (
     FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- seasons
+-- series_cast (cast cấp series, dùng bởi SeriesService)
+CREATE TABLE IF NOT EXISTS series_cast (
+    series_id INT NOT NULL,
+    person_id INT NOT NULL,
+    role VARCHAR(191) NOT NULL DEFAULT 'actor',
+    PRIMARY KEY (series_id, person_id),
+    FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
+    FOREIGN KEY (person_id) REFERENCES persons(id) ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- seasons (INSERT trong Spring: series_id, season_number, title, description)
 CREATE TABLE IF NOT EXISTS seasons (
     id INT AUTO_INCREMENT PRIMARY KEY,
     series_id INT NOT NULL,
@@ -124,6 +136,27 @@ CREATE TABLE IF NOT EXISTS seasons (
     INDEX idx_seasons_series (series_id),
     FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Nếu DB cũ chưa có title_normalized (chạy một lần):
+-- ALTER TABLE movies ADD COLUMN title_normalized VARCHAR(191) NULL AFTER title;
+-- ALTER TABLE series ADD COLUMN title_normalized VARCHAR(191) NULL AFTER title;
+
+-- Nếu DB cũ chưa có series_cast (chạy một lần):
+-- CREATE TABLE IF NOT EXISTS series_cast (
+--   series_id INT NOT NULL, person_id INT NOT NULL, role VARCHAR(191) NOT NULL DEFAULT 'actor',
+--   PRIMARY KEY (series_id, person_id),
+--   FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
+--   FOREIGN KEY (person_id) REFERENCES persons(id) ON DELETE CASCADE
+-- ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Nếu DB Prisma có updated_at NOT NULL không có DEFAULT (lỗi Field 'updated_at' doesn't have a default value):
+-- ALTER TABLE users    MODIFY updated_at DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
+-- ALTER TABLE movies  MODIFY updated_at DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
+-- ALTER TABLE series  MODIFY updated_at DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
+-- ALTER TABLE episodes MODIFY updated_at DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
+
+-- Nếu DB cũ chưa có name_normalized cho persons (chạy một lần):
+-- ALTER TABLE persons ADD COLUMN name_normalized VARCHAR(255) NULL AFTER name;
 
 -- episodes
 CREATE TABLE IF NOT EXISTS episodes (

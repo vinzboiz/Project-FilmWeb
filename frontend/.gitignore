@@ -1,0 +1,59 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Ignore legacy Node backend entirely (only keep backend-spring)
+backend/
+
+# Maven build output - backend-spring
+backend-spring/target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build / output
+frontend/dist/
+backend/dist/
+*.log
+npm-debug.log*
+
+# Uploads (media files - optional: remove if you want to track them)
+uploads/
+backend/uploads/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Prisma
+backend/node_modules/.prisma/

@@ -1,0 +1,210 @@
+/* Dùng chung cho các trang Admin */
+.admin-page {
+  padding: 24px;
+}
+
+.admin-page--narrow {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.admin-msg-success {
+  color: #2e7d32;
+}
+
+.admin-msg-error {
+  color: #e53935;
+}
+
+.admin-form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-form-col .admin-input,
+.admin-form-col input[type="text"],
+.admin-form-col input[type="number"],
+.admin-form-col textarea {
+  padding: 8px;
+}
+
+.admin-form-col textarea {
+  min-height: 60px;
+}
+
+.admin-input {
+  padding: 6px 8px;
+  min-width: 200px;
+}
+
+.admin-input--wide {
+  min-width: 220px;
+}
+
+.admin-input--short {
+  width: 120px;
+  min-width: 120px;
+}
+
+.admin-label-inline {
+  font-size: 14px;
+}
+
+.admin-label-inline input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.admin-btn-submit {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.admin-upload-hint {
+  font-size: 12px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.admin-table th {
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  padding: 8px;
+}
+
+.admin-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table td.admin-td-muted {
+  font-size: 13px;
+  color: #888;
+}
+
+.admin-table img.admin-thumb {
+  width: 70px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.admin-table img.admin-thumb-sm {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.admin-table .admin-btn-link {
+  margin-right: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #64b5f6;
+  text-decoration: none;
+  font-size: inherit;
+}
+
+.admin-table .admin-btn-link:hover {
+  text-decoration: underline;
+}
+
+.admin-btn-danger {
+  color: #e53935;
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-right: 8px;
+  font-size: inherit;
+}
+
+.admin-btn-danger:hover {
+  text-decoration: underline;
+}
+
+.admin-fieldset {
+  border: 1px solid #444;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.admin-fieldset legend {
+  font-weight: 600;
+}
+
+.admin-fieldset label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.admin-fieldset input[type="file"] {
+  display: block;
+  margin-top: 4px;
+}
+
+.admin-fieldset input[type="text"] {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.admin-fieldset-hint {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.admin-form-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.admin-form-label input,
+.admin-form-label select,
+.admin-form-label textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.admin-form-actions button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.admin-form-col button[type="submit"] {
+  margin-top: 12px;
+}
+
+.admin-form-actions button[type="button"] {
+  padding: 8px 12px;
+}
+
+.admin-checkbox-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
